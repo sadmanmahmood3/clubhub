@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="hero rounded-4 p-5 mb-4">
+  <h1 class="display-5 fw-bold">All IUB clubs and events in one place</h1>
+  <p class="lead mb-0">
+    Discover clubs, join the ones you like, and register for events without filling out
+    another Google Form.
+  </p>
+</section>
+
+<div class="row g-4">
+  <div class="col-md-4">
+    <div class="card h-100 shadow-sm">
+      <div class="card-body">
+        <h5 class="card-title"><i class="bi bi-search"></i> Discover</h5>
+        <p class="card-text">Browse every active club at IUB and see what they are doing.</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card h-100 shadow-sm">
+      <div class="card-body">
+        <h5 class="card-title"><i class="bi bi-calendar-check"></i> Register</h5>
+        <p class="card-text">Register for events in one click and check in with a code.</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card h-100 shadow-sm">
+      <div class="card-body">
+        <h5 class="card-title"><i class="bi bi-shield-check"></i> Approve</h5>
+        <p class="card-text">DOSA reviews and approves every event before it goes public.</p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

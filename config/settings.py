@@ -24,6 +24,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    # ClubHub apps
+    "accounts",
 ]
 
 MIDDLEWARE = [
@@ -87,3 +89,6 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 
 # Bootstrap uses "danger" for red alerts, Django uses "error".
 MESSAGE_TAGS = {messages.ERROR: "danger"}
+
+# Use our own User model (accounts.User) instead of Django's default one.
+AUTH_USER_MODEL = "accounts.User"

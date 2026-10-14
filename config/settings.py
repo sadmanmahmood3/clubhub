@@ -4,6 +4,7 @@ CSE 451 Software Engineering, IUB, Autumn 2026.
 """
 import os
 from pathlib import Path
+from django.contrib.messages import constants as messages
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -23,6 +24,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    # ClubHub apps
+    "accounts",
 ]
 
 MIDDLEWARE = [
@@ -40,7 +43,7 @@ ROOT_URLCONF = "config.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [BASE_DIR / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -81,3 +84,15 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+STATICFILES_DIRS = [BASE_DIR / "static"]
+
+# Bootstrap uses "danger" for red alerts, Django uses "error".
+MESSAGE_TAGS = {messages.ERROR: "danger"}
+
+# Use our own User model (accounts.User) instead of Django's default one.
+AUTH_USER_MODEL = "accounts.User"
+
+LOGIN_URL = "accounts:login"
+LOGIN_REDIRECT_URL = "home"
+LOGOUT_REDIRECT_URL = "home"

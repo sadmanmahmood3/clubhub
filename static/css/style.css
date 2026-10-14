@@ -1,0 +1,30 @@
+/* ClubHub custom styles (on top of Bootstrap 5) */
+
+:root {
+  --clubhub-primary: #1f3c88;
+  --clubhub-accent: #f2a541;
+}
+
+.bg-clubhub {
+  background-color: var(--clubhub-primary);
+}
+
+.hero {
+  background: linear-gradient(135deg, #1f3c88 0%, #3a5bb8 100%);
+  color: #fff;
+}
+
+.card-title i {
+  color: var(--clubhub-accent);
+}
+
+.status-badge {
+  text-transform: capitalize;
+}
+
+.navbar .badge {
+  font-size: 0.65rem;
+  position: absolute;
+  top: 2px;
+  right: -4px;
+}

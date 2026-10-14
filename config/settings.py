@@ -92,3 +92,7 @@ MESSAGE_TAGS = {messages.ERROR: "danger"}
 
 # Use our own User model (accounts.User) instead of Django's default one.
 AUTH_USER_MODEL = "accounts.User"
+
+LOGIN_URL = "accounts:login"
+LOGIN_REDIRECT_URL = "home"
+LOGOUT_REDIRECT_URL = "home"

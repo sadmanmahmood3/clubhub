@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     # ClubHub apps
     "accounts",
     "clubs",
+    "events",
 ]
 
 MIDDLEWARE = [

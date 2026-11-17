@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}My registrations{% endblock %}
+
+{% block content %}
+<h1 class="h3 mb-3">My registrations</h1>
+
+<h2 class="h5">Upcoming</h2>
+<div class="list-group shadow-sm mb-4">
+  {% for r in upcoming %}
+    <a href="{% url 'events:detail' r.event.pk %}" class="list-group-item list-group-item-action">
+      <strong>{{ r.event.title }}</strong>
+      <span class="d-block small text-muted">
+        {{ r.event.club.name }} &middot; {{ r.event.start_time|date:"D, M j, g:i A" }} &middot; {{ r.event.venue }}
+      </span>
+    </a>
+  {% empty %}
+    <div class="list-group-item text-muted">
+      No upcoming events. <a href="{% url 'events:list' %}">Find an event</a>
+    </div>
+  {% endfor %}
+</div>
+
+<h2 class="h5">Past events</h2>
+<div class="list-group shadow-sm">
+  {% for r in past %}
+    <a href="{% url 'events:detail' r.event.pk %}" class="list-group-item list-group-item-action d-flex justify-content-between">
+      <span>{{ r.event.title }} <span class="small text-muted">({{ r.event.start_time|date:"M j, Y" }})</span></span>
+      {% if r.checked_in %}<span class="badge bg-success">Attended</span>{% else %}<span class="badge bg-secondary">Not checked in</span>{% endif %}
+    </a>
+  {% empty %}
+    <div class="list-group-item text-muted">No past events yet.</div>
+  {% endfor %}
+</div>
+{% endblock %}

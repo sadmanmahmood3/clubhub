@@ -21,6 +21,9 @@
         <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
         <li class="nav-item"><a class="nav-link" href="{% url 'clubs:list' %}">Clubs</a></li>
         <li class="nav-item"><a class="nav-link" href="{% url 'events:list' %}">Events</a></li>
+        {% if user.is_authenticated and user.is_dosa %}
+        <li class="nav-item"><a class="nav-link" href="{% url 'registrations:report' %}">Reports</a></li>
+        {% endif %}
       </ul>
       <ul class="navbar-nav">
         {% if user.is_authenticated %}
@@ -38,6 +41,7 @@
               <li><a class="dropdown-item" href="{% url 'accounts:dashboard' %}">Dashboard</a></li>
               <li><a class="dropdown-item" href="{% url 'accounts:profile' %}">My profile</a></li>
               <li><a class="dropdown-item" href="{% url 'clubs:my_clubs' %}">My clubs</a></li>
+              <li><a class="dropdown-item" href="{% url 'registrations:my_registrations' %}">My registrations</a></li>
               <li><hr class="dropdown-divider"></li>
               <li>
                 <form method="post" action="{% url 'accounts:logout' %}">

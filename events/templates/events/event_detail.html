@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load event_tags %}
+{% load event_tags registration_tags %}
 
 {% block title %}{{ event.title }}{% endblock %}
 
@@ -24,6 +24,10 @@
       </div>
     </div>
 
+    {% if event.status == "approved" or event.status == "completed" %}
+      {% registration_box event %}
+    {% endif %}
+
     {% if is_executive %}
       <div class="card shadow-sm mb-3">
         <div class="card-body">
@@ -36,6 +40,9 @@
             </form>
           {% elif event.status == "pending" %}
             <p class="mb-0 small">Waiting for DOSA to review this event.</p>
+          {% endif %}
+          {% if event.status == "approved" or event.status == "completed" %}
+            <a class="btn btn-outline-secondary w-100" href="{% url 'registrations:event_registrations' event.pk %}">Registrations &amp; attendance</a>
           {% endif %}
         </div>
       </div>

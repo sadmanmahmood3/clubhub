@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% load event_tags %}
+
+{% block title %}Events: {{ club.name }}{% endblock %}
+
+{% block content %}
+<a href="{{ club.get_absolute_url }}" class="small">&larr; Back to {{ club.name }}</a>
+<div class="d-flex justify-content-between align-items-center mt-2 mb-3">
+  <h1 class="h3 mb-0">{{ club.name }}: all events</h1>
+  <a class="btn btn-primary" href="{% url 'events:create' club.slug %}"><i class="bi bi-plus-lg"></i> New event</a>
+</div>
+
+<table class="table align-middle">
+  <thead><tr><th>Event</th><th>Date</th><th>Venue</th><th>Status</th></tr></thead>
+  <tbody>
+    {% for event in events %}
+      <tr>
+        <td><a href="{% url 'events:detail' event.pk %}">{{ event.title }}</a></td>
+        <td>{{ event.start_time|date:"M j, Y g:i A" }}</td>
+        <td>{{ event.venue }}</td>
+        <td><span class="badge bg-{{ event.status|status_color }}">{{ event.get_status_display }}</span></td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="4" class="text-muted">This club has no events yet.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,10 @@
+<div class="list-group">
+  {% for event in events %}
+    <a href="{% url 'events:detail' event.pk %}" class="list-group-item list-group-item-action">
+      <strong>{{ event.title }}</strong>
+      <span class="d-block small text-muted">{{ event.start_time|date:"D, M j, g:i A" }} &middot; {{ event.venue }}</span>
+    </a>
+  {% empty %}
+    <div class="list-group-item text-muted">No upcoming events.</div>
+  {% endfor %}
+</div>

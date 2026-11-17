@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
+from django.db.models import Count, Q
 from django.shortcuts import redirect, render
 from django.utils import timezone
 
@@ -9,6 +10,20 @@ from events.models import Event
 
 from .forms import ProfileForm, SignUpForm
 from .models import User
+
+
+def home(request):
+    """Landing page: next few events and the most popular clubs."""
+    upcoming_events = Event.objects.filter(
+        status=Event.Status.APPROVED, start_time__gte=timezone.now()
+    ).select_related("club")[:3]
+    popular_clubs = Club.objects.filter(is_active=True).annotate(
+        member_count=Count("memberships", filter=Q(memberships__status=Membership.Status.APPROVED))
+    ).order_by("-member_count", "name")[:3]
+    return render(request, "home.html", {
+        "upcoming_events": upcoming_events,
+        "popular_clubs": popular_clubs,
+    })
 
 
 def signup(request):

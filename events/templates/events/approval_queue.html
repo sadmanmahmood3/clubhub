@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% load event_tags %}
+
+{% block title %}Event approvals{% endblock %}
+
+{% block content %}
+<h1 class="h3 mb-3">Events waiting for DOSA approval</h1>
+<table class="table align-middle">
+  <thead>
+    <tr><th>Event</th><th>Club</th><th>Date</th><th>Venue</th><th>Submitted by</th><th></th></tr>
+  </thead>
+  <tbody>
+    {% for event in pending %}
+      <tr>
+        <td>{{ event.title }}</td>
+        <td>{{ event.club.name }}</td>
+        <td>{{ event.start_time|date:"M j, Y g:i A" }}</td>
+        <td>{{ event.venue }}</td>
+        <td>{{ event.created_by|default:"-" }}</td>
+        <td class="text-end"><a class="btn btn-sm btn-warning" href="{% url 'events:review' event.pk %}">Review</a></td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="6" class="text-muted">Nothing to review right now.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<h2 class="h5 mt-5">Recently reviewed</h2>
+<table class="table table-sm align-middle">
+  <thead><tr><th>Event</th><th>Club</th><th>Decision</th><th>Reviewed by</th><th>When</th></tr></thead>
+  <tbody>
+    {% for event in recently_reviewed %}
+      <tr>
+        <td><a href="{% url 'events:detail' event.pk %}">{{ event.title }}</a></td>
+        <td>{{ event.club.name }}</td>
+        <td><span class="badge bg-{{ event.status|status_color }}">{{ event.get_status_display }}</span></td>
+        <td>{{ event.reviewed_by|default:"-" }}</td>
+        <td>{{ event.reviewed_at|date:"M j, g:i A" }}</td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="5" class="text-muted">No reviews yet.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

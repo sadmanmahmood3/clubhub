@@ -40,11 +40,25 @@ pip install -r requirements.txt
 # 3. Create the database tables
 python manage.py migrate
 
-# 4. Start the server, then open http://127.0.0.1:8000
+# 4. (Optional) Load demo data
+python manage.py seed_demo
+
+# 5. Start the server, then open http://127.0.0.1:8000
 python manage.py runserver
 ```
 
 On macOS/Linux, activate with `source venv/bin/activate`.
+
+### Demo accounts (after `seed_demo`)
+
+All demo accounts use the password `clubhub2026`.
+
+| Username | Role |
+| --- | --- |
+| `dosa` | DOSA admin (can also open `/admin/`) |
+| `rafi` | Executive of IUB Computer Club |
+| `tasnia` | Executive of IUB Debate Club and IUB Photography Club |
+| `nadia`, `mim`, `arif` | Students |
 
 ### Run the tests
 

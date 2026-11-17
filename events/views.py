@@ -112,5 +112,5 @@ def club_events(request, slug):
     """All events of one club (including drafts), for its executives."""
     club = get_object_or_404(Club, slug=slug)
     _require_executive(request, club)
-    events = club.events.order_by("start_time")
+    events = club.events.order_by("-start_time")
     return render(request, "events/club_events.html", {"club": club, "events": events})

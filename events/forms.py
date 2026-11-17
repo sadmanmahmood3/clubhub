@@ -1,4 +1,5 @@
 from django import forms
+from django.utils import timezone
 
 from accounts.forms import BootstrapFormMixin
 
@@ -17,3 +18,9 @@ class EventForm(BootstrapFormMixin, forms.ModelForm):
             "end_time": forms.DateTimeInput(attrs={"type": "datetime-local"}, format=DATETIME_INPUT),
         }
         help_texts = {"capacity": "Maximum number of students who can register."}
+
+    def clean_start_time(self):
+        start_time = self.cleaned_data["start_time"]
+        if start_time < timezone.now():
+            raise forms.ValidationError("The event must start in the future.")
+        return start_time

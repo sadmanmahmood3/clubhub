@@ -15,7 +15,7 @@
         <form method="post" novalidate>
           {% csrf_token %}
           {% include "partials/form_fields.html" with form=form %}
-          <button type="submit" class="btn btn-primary">Save</button>
+          <button type="submit" class="btn btn-primary">Save as draft</button>
           <a href="{% if event %}{% url 'events:detail' event.pk %}{% else %}{{ club.get_absolute_url }}{% endif %}" class="btn btn-link">Cancel</a>
         </form>
       </div>

@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load event_tags %}
 
 {% block title %}{{ club.name }}{% endblock %}
 
@@ -12,6 +13,9 @@
     {% if club.email %}
       <p><i class="bi bi-envelope"></i> <a href="mailto:{{ club.email }}">{{ club.email }}</a></p>
     {% endif %}
+
+    <h2 class="h5 mt-4">Upcoming events</h2>
+    {% club_upcoming_events club %}
   </div>
 
   <div class="col-lg-4">
@@ -25,6 +29,8 @@
           <p class="mb-2">You are a <strong>{{ membership.get_role_display|lower }}</strong> of this club.</p>
           {% if is_executive %}
             <a class="btn btn-outline-primary w-100 mb-2" href="{% url 'clubs:manage_members' club.slug %}">Manage members</a>
+            <a class="btn btn-primary w-100 mb-2" href="{% url 'events:create' club.slug %}">Create event</a>
+            <a class="btn btn-outline-secondary w-100" href="{% url 'events:club_events' club.slug %}">Manage events</a>
           {% else %}
             <form method="post" action="{% url 'clubs:leave' club.slug %}">
               {% csrf_token %}

@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}Manage members: {{ club.name }}{% endblock %}
+
+{% block content %}
+<a href="{{ club.get_absolute_url }}" class="small">&larr; Back to {{ club.name }}</a>
+<h1 class="h3 mt-2 mb-4">Manage members</h1>
+
+<h2 class="h5">Join requests ({{ pending|length }})</h2>
+{% if pending %}
+  <table class="table align-middle">
+    <thead><tr><th>Student</th><th>Student ID</th><th>Requested</th><th></th></tr></thead>
+    <tbody>
+      {% for m in pending %}
+        <tr>
+          <td>{{ m.user }}</td>
+          <td>{{ m.user.student_id }}</td>
+          <td>{{ m.joined_at|date:"M j, Y" }}</td>
+          <td class="text-end">
+            <form class="d-inline" method="post" action="{% url 'clubs:update_membership' club.slug m.id 'approve' %}">
+              {% csrf_token %}<button class="btn btn-sm btn-success">Approve</button>
+            </form>
+            <form class="d-inline" method="post" action="{% url 'clubs:update_membership' club.slug m.id 'reject' %}">
+              {% csrf_token %}<button class="btn btn-sm btn-outline-danger">Reject</button>
+            </form>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <p class="text-muted">No pending requests.</p>
+{% endif %}
+
+<h2 class="h5 mt-4">Members ({{ members|length }})</h2>
+<table class="table align-middle">
+  <thead><tr><th>Name</th><th>Student ID</th><th>Role</th><th>Since</th><th></th></tr></thead>
+  <tbody>
+    {% for m in members %}
+      <tr>
+        <td>{{ m.user }}</td>
+        <td>{{ m.user.student_id }}</td>
+        <td>{{ m.get_role_display }}</td>
+        <td>{{ m.joined_at|date:"M j, Y" }}</td>
+        <td class="text-end">
+          {% if m.role == "member" %}
+            <form class="d-inline" method="post" action="{% url 'clubs:update_membership' club.slug m.id 'promote' %}">
+              {% csrf_token %}<button class="btn btn-sm btn-outline-primary">Make executive</button>
+            </form>
+          {% endif %}
+          {% if m.user != user %}
+            <form class="d-inline" method="post" action="{% url 'clubs:update_membership' club.slug m.id 'remove' %}">
+              {% csrf_token %}<button class="btn btn-sm btn-outline-danger" onclick="return confirm('Remove this member?')">Remove</button>
+            </form>
+          {% endif %}
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

@@ -24,7 +24,7 @@
         {% elif membership.status == "approved" %}
           <p class="mb-2">You are a <strong>{{ membership.get_role_display|lower }}</strong> of this club.</p>
           {% if is_executive %}
-            <p class="small text-muted mb-0">You are an executive of this club.</p>
+            <a class="btn btn-outline-primary w-100 mb-2" href="{% url 'clubs:manage_members' club.slug %}">Manage members</a>
           {% else %}
             <form method="post" action="{% url 'clubs:leave' club.slug %}">
               {% csrf_token %}

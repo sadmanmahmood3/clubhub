@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<h1 class="h3 mb-1">Hi, {{ user.first_name|default:user.username }}</h1>
+<p class="text-muted">{% if user.is_dosa %}DOSA Admin{% else %}Student{% if user.student_id %} &middot; ID {{ user.student_id }}{% endif %}{% endif %}</p>
+
+{% if user.is_dosa %}
+<div class="row g-3 mb-4">
+  <div class="col-6 col-md-3">
+    <div class="card text-center shadow-sm"><div class="card-body">
+      <div class="display-6">{{ pending_event_count }}</div><div class="small text-muted">events waiting for approval</div>
+    </div></div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card text-center shadow-sm"><div class="card-body">
+      <div class="display-6">{{ upcoming_event_count }}</div><div class="small text-muted">upcoming approved events</div>
+    </div></div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card text-center shadow-sm"><div class="card-body">
+      <div class="display-6">{{ club_count }}</div><div class="small text-muted">active clubs</div>
+    </div></div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card text-center shadow-sm"><div class="card-body">
+      <div class="display-6">{{ student_count }}</div><div class="small text-muted">students</div>
+    </div></div>
+  </div>
+</div>
+{% endif %}
+
+{% if not user.is_dosa %}
+<div class="row g-4">
+  <div class="col-lg-8">
+    <div class="card shadow-sm h-100">
+      <div class="card-body">
+        <h2 class="h5">My clubs</h2>
+        <ul class="list-group list-group-flush">
+          {% for m in memberships %}
+            <li class="list-group-item px-0 d-flex justify-content-between align-items-center">
+              <a href="{{ m.club.get_absolute_url }}">{{ m.club.name }}</a>
+              {% if m.role == "executive" %}<span class="badge bg-warning text-dark">Executive</span>{% endif %}
+            </li>
+          {% empty %}
+            <li class="list-group-item px-0 text-muted">
+              You haven't joined any clubs yet. <a href="{% url 'clubs:list' %}">Find a club</a>
+            </li>
+          {% endfor %}
+          {% for m in pending_memberships %}
+            <li class="list-group-item px-0 text-muted">{{ m.club.name }} <span class="badge bg-light text-dark">request pending</span></li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+{% if executive_clubs %}
+<div class="card shadow-sm mt-4">
+  <div class="card-body">
+    <h2 class="h5">Clubs I manage</h2>
+    {% for club in executive_clubs %}
+      <div class="d-flex flex-wrap gap-2 align-items-center py-2 border-bottom">
+        <strong class="me-auto">{{ club.name }}</strong>
+        <a class="btn btn-sm btn-primary" href="{% url 'events:create' club.slug %}">Create event</a>
+        <a class="btn btn-sm btn-outline-secondary" href="{% url 'events:club_events' club.slug %}">Manage events</a>
+        <a class="btn btn-sm btn-outline-secondary" href="{% url 'clubs:manage_members' club.slug %}">Members</a>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+{% endblock %}

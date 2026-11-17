@@ -38,5 +38,11 @@ class ReviewForm(BootstrapFormMixin, forms.Form):
     comment = forms.CharField(
         required=False,
         widget=forms.Textarea(attrs={"rows": 3}),
-        help_text="Optional note for the club.",
+        help_text="Required when rejecting, so the club knows what to fix.",
     )
+
+    def clean(self):
+        cleaned = super().clean()
+        if cleaned.get("decision") == self.REJECT and not cleaned.get("comment", "").strip():
+            self.add_error("comment", "Please tell the club why the event was rejected.")
+        return cleaned

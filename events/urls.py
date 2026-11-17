@@ -6,9 +6,12 @@ app_name = "events"
 
 urlpatterns = [
     path("", views.event_list, name="list"),
+    path("approvals/", views.approval_queue, name="approval_queue"),
     path("<int:pk>/", views.event_detail, name="detail"),
     path("<int:pk>/edit/", views.event_edit, name="edit"),
     path("<int:pk>/submit/", views.submit_for_approval, name="submit"),
+    path("<int:pk>/review/", views.review_event, name="review"),
+    path("<int:pk>/complete/", views.mark_completed, name="complete"),
     path("club/<slug:slug>/", views.club_events, name="club_events"),
     path("club/<slug:slug>/new/", views.event_create, name="create"),
 ]

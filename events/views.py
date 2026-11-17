@@ -1,15 +1,20 @@
 from django.contrib import messages
+from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.db.models import Q
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 
-from clubs.models import Club
+from accounts.decorators import dosa_required
+from notifications.utils import notify
 
-from .forms import EventForm
+from clubs.models import Club, Membership
+
+from .forms import EventForm, ReviewForm
 from .models import Event
 
 
@@ -104,6 +109,14 @@ def submit_for_approval(request, pk):
     event.status = Event.Status.PENDING
     event.save(update_fields=["status", "updated_at"])
     messages.success(request, "Event sent to DOSA for approval.")
+
+    User = get_user_model()
+    dosa_users = User.objects.filter(Q(role=User.Role.DOSA) | Q(is_superuser=True))
+    notify(
+        dosa_users,
+        f"New event waiting for approval: {event.title} ({event.club.name}).",
+        reverse("events:review", args=[event.pk]),
+    )
     return redirect("events:detail", pk=event.pk)
 
 
@@ -114,3 +127,57 @@ def club_events(request, slug):
     _require_executive(request, club)
     events = club.events.order_by("-start_time")
     return render(request, "events/club_events.html", {"club": club, "events": events})
+
+
+# ---------------------------------------------------------------- DOSA approval
+
+@dosa_required
+def approval_queue(request):
+    pending = Event.objects.filter(status=Event.Status.PENDING).select_related(
+        "club", "created_by"
+    ).order_by("updated_at")
+    return render(request, "events/approval_queue.html", {"pending": pending})
+
+
+@dosa_required
+def review_event(request, pk):
+    """DOSA approves or rejects one pending event, with a comment."""
+    event = get_object_or_404(Event.objects.select_related("club", "created_by"), pk=pk)
+    if event.status != Event.Status.PENDING:
+        messages.info(request, "This event is not waiting for approval.")
+        return redirect("events:approval_queue")
+
+    form = ReviewForm(request.POST or None)
+    if request.method == "POST" and form.is_valid():
+        approved = form.cleaned_data["decision"] == ReviewForm.APPROVE
+        event.status = Event.Status.APPROVED if approved else Event.Status.REJECTED
+        event.dosa_comment = form.cleaned_data["comment"]
+        event.reviewed_by = request.user
+        event.reviewed_at = timezone.now()
+        event.save()
+
+        executives = [m.user for m in event.club.memberships.filter(
+            role=Membership.Role.EXECUTIVE, status=Membership.Status.APPROVED
+        ).select_related("user")]
+        result = "approved" if approved else "rejected"
+        notify(executives, f"DOSA {result} your event \"{event.title}\".",
+               reverse("events:detail", args=[event.pk]))
+
+        messages.success(request, f"\"{event.title}\" was {result}.")
+        return redirect("events:approval_queue")
+
+    return render(request, "events/review_event.html", {"event": event, "form": form})
+
+
+@login_required
+@require_POST
+def mark_completed(request, pk):
+    event = get_object_or_404(Event, pk=pk)
+    _require_executive(request, event.club)
+    if event.status == Event.Status.APPROVED and event.has_ended:
+        event.status = Event.Status.COMPLETED
+        event.save(update_fields=["status", "updated_at"])
+        messages.success(request, "Event marked as completed.")
+    else:
+        messages.error(request, "Only approved events that have ended can be completed.")
+    return redirect("events:detail", pk=event.pk)

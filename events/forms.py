@@ -24,3 +24,19 @@ class EventForm(BootstrapFormMixin, forms.ModelForm):
         if start_time < timezone.now():
             raise forms.ValidationError("The event must start in the future.")
         return start_time
+
+
+class ReviewForm(BootstrapFormMixin, forms.Form):
+    """DOSA's decision on a pending event."""
+
+    APPROVE = "approve"
+    REJECT = "reject"
+
+    decision = forms.ChoiceField(
+        choices=[(APPROVE, "Approve"), (REJECT, "Reject")], widget=forms.RadioSelect
+    )
+    comment = forms.CharField(
+        required=False,
+        widget=forms.Textarea(attrs={"rows": 3}),
+        help_text="Optional note for the club.",
+    )

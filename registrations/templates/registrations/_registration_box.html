@@ -8,6 +8,18 @@
 
     {% if registration %}
       <p class="text-success mb-2"><i class="bi bi-check-circle-fill"></i> You are registered.</p>
+      {% if registration.checked_in %}
+        <p class="mb-2"><i class="bi bi-person-check-fill"></i> Checked in at {{ registration.checked_in_at|time:"g:i A" }}.</p>
+      {% elif event.checkin_code and not event.has_ended %}
+        <form class="mb-2" method="post" action="{% url 'registrations:checkin' event.pk %}">
+          {% csrf_token %}
+          <label class="form-label small" for="checkin-code">At the event? Enter the check-in code:</label>
+          <div class="input-group">
+            <input class="form-control text-uppercase" id="checkin-code" name="code" maxlength="6" required>
+            <button class="btn btn-success">Check in</button>
+          </div>
+        </form>
+      {% endif %}
       {% if event.is_upcoming %}
         <form method="post" action="{% url 'registrations:cancel' event.pk %}">
           {% csrf_token %}

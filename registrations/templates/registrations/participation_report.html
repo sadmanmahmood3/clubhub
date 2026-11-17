@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Participation report{% endblock %}
+
+{% block content %}
+<h1 class="h3 mb-1">Participation report</h1>
+<p class="text-muted">Approved and completed events only.</p>
+
+<div class="row g-3 mb-4">
+  <div class="col-sm-4">
+    <div class="card text-center shadow-sm"><div class="card-body">
+      <div class="display-6">{{ totals.event_count }}</div><div class="small text-muted">events</div>
+    </div></div>
+  </div>
+  <div class="col-sm-4">
+    <div class="card text-center shadow-sm"><div class="card-body">
+      <div class="display-6">{{ totals.registration_count }}</div><div class="small text-muted">registrations</div>
+    </div></div>
+  </div>
+  <div class="col-sm-4">
+    <div class="card text-center shadow-sm"><div class="card-body">
+      <div class="display-6">{{ totals.attendance_count }}</div><div class="small text-muted">students attended</div>
+    </div></div>
+  </div>
+</div>
+
+<table class="table table-striped align-middle">
+  <thead>
+    <tr><th>Club</th><th class="text-end">Events</th><th class="text-end">Registrations</th><th class="text-end">Attended</th><th class="text-end">Turnout</th></tr>
+  </thead>
+  <tbody>
+    {% for club in clubs %}
+      <tr>
+        <td><a href="{{ club.get_absolute_url }}">{{ club.name }}</a></td>
+        <td class="text-end">{{ club.event_count }}</td>
+        <td class="text-end">{{ club.registration_count }}</td>
+        <td class="text-end">{{ club.attendance_count }}</td>
+        <td class="text-end">
+          {% if club.registration_count %}{% widthratio club.attendance_count club.registration_count 100 %}%{% else %}-{% endif %}
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

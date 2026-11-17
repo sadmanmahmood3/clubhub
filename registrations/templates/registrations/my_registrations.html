@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}My registrations{% endblock %}
+
+{% block content %}
+<h1 class="h3 mb-3">My registrations</h1>
+
+<div class="list-group shadow-sm">
+  {% for r in registrations %}
+    <a href="{% url 'events:detail' r.event.pk %}" class="list-group-item list-group-item-action">
+      <strong>{{ r.event.title }}</strong>
+      <span class="d-block small text-muted">
+        {{ r.event.club.name }} &middot; {{ r.event.start_time|date:"D, M j, g:i A" }} &middot; {{ r.event.venue }}
+      </span>
+    </a>
+  {% empty %}
+    <div class="list-group-item text-muted">
+      You haven't registered for any events yet. <a href="{% url 'events:list' %}">Find an event</a>
+    </div>
+  {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% comment %}Shown on the event page. Rendered by the registration_box tag.{% endcomment %}
+<div class="card shadow-sm mb-3">
+  <div class="card-body">
+    <h2 class="h6 text-uppercase text-muted">Registration</h2>
+    {% if is_open %}
+      <p class="mb-2"><strong>{{ seats_left }}</strong> of {{ event.capacity }} seats left</p>
+    {% endif %}
+
+    {% if registration %}
+      <p class="text-success mb-2"><i class="bi bi-check-circle-fill"></i> You are registered.</p>
+      {% if event.is_upcoming %}
+        <form method="post" action="{% url 'registrations:cancel' event.pk %}">
+          {% csrf_token %}
+          <button class="btn btn-outline-danger w-100" onclick="return confirm('Cancel your registration?')">Cancel registration</button>
+        </form>
+      {% endif %}
+    {% elif not is_open %}
+      <p class="text-muted mb-0">Registration is closed.</p>
+    {% elif not user.is_authenticated %}
+      <a class="btn btn-primary w-100" href="{% url 'accounts:login' %}?next={{ request.path }}">Log in to register</a>
+    {% elif seats_left == 0 %}
+      <button class="btn btn-secondary w-100" disabled>Event is full</button>
+    {% else %}
+      <form method="post" action="{% url 'registrations:register' event.pk %}">
+        {% csrf_token %}
+        <button class="btn btn-primary w-100">Register</button>
+      </form>
+    {% endif %}
+  </div>
+</div>

@@ -4,7 +4,10 @@ from django.core.exceptions import PermissionDenied
 from django.db.models import Count, Q
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from django.views.decorators.http import require_POST
+
+from notifications.utils import notify
 
 from .models import Club, Membership
 
@@ -61,6 +64,14 @@ def join_club(request, slug):
 
     if created:
         messages.success(request, f"Your request to join {club.name} was sent to the club executives.")
+        executives = [m.user for m in club.memberships.filter(
+            role=Membership.Role.EXECUTIVE, status=Membership.Status.APPROVED
+        ).select_related("user")]
+        notify(
+            executives,
+            f"{request.user} wants to join {club.name}.",
+            reverse("clubs:manage_members", args=[club.slug]),
+        )
     elif membership.status == Membership.Status.PENDING:
         messages.info(request, "Your join request is already waiting for approval.")
     else:
@@ -133,5 +144,13 @@ def update_membership(request, slug, membership_id, action):
         messages.info(request, f"{name} was removed from the club.")
     else:
         raise Http404("Unknown action")
+
+    messages_for_member = {
+        "approve": f"Your request to join {club.name} was approved. Welcome!",
+        "reject": f"Your request to join {club.name} was not approved.",
+        "promote": f"You are now an executive of {club.name}.",
+    }
+    if action in messages_for_member:
+        notify(membership.user, messages_for_member[action], club.get_absolute_url())
 
     return redirect("clubs:manage_members", slug=slug)

@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Clubs{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+  <h1 class="h3 mb-0">Clubs at IUB</h1>
+</div>
+
+<div class="row g-3">
+  {% for club in clubs %}
+    <div class="col-md-6 col-lg-4">
+      <div class="card h-100 shadow-sm">
+        <div class="card-body">
+          <span class="badge bg-secondary mb-2">{{ club.get_category_display }}</span>
+          <h5 class="card-title">{{ club.name }}</h5>
+          <p class="card-text text-muted">{{ club.description|truncatewords:25 }}</p>
+        </div>
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+          <small class="text-muted"><i class="bi bi-people"></i> {{ club.member_count }} member{{ club.member_count|pluralize }}</small>
+          <a href="{{ club.get_absolute_url }}" class="btn btn-sm btn-primary">View club</a>
+        </div>
+      </div>
+    </div>
+  {% empty %}
+    <p class="text-muted">No clubs found.</p>
+  {% endfor %}
+</div>
+{% endblock %}

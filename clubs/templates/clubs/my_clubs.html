@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}My clubs{% endblock %}
+
+{% block content %}
+<h1 class="h3 mb-3">My clubs</h1>
+<div class="list-group shadow-sm">
+  {% for m in memberships %}
+    <a href="{{ m.club.get_absolute_url }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+      <span>
+        <strong>{{ m.club.name }}</strong>
+        <span class="small text-muted d-block">{{ m.club.get_category_display }}</span>
+      </span>
+      <span>
+        {% if m.status == "approved" %}
+          <span class="badge bg-success">{{ m.get_role_display }}</span>
+        {% elif m.status == "pending" %}
+          <span class="badge bg-warning text-dark">Pending</span>
+        {% else %}
+          <span class="badge bg-secondary">Not approved</span>
+        {% endif %}
+      </span>
+    </a>
+  {% empty %}
+    <div class="list-group-item text-muted">
+      You haven't joined any clubs yet. <a href="{% url 'clubs:list' %}">Browse clubs</a>
+    </div>
+  {% endfor %}
+</div>
+{% endblock %}

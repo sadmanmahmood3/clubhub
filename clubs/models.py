@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from django.urls import reverse
 from django.utils.text import slugify
 
 
@@ -34,6 +35,9 @@ class Club(models.Model):
         if not self.slug:
             self.slug = slugify(self.name)
         super().save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        return reverse("clubs:detail", args=[self.slug])
 
     def approved_members(self):
         return self.memberships.filter(status=Membership.Status.APPROVED)

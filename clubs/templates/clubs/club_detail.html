@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}{{ club.name }}{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+  <div class="col-lg-8">
+    <span class="badge bg-secondary">{{ club.get_category_display }}</span>
+    <h1 class="h2 mt-2">{{ club.name }}</h1>
+    {% if club.founded_year %}<p class="text-muted mb-2">Founded in {{ club.founded_year }}</p>{% endif %}
+    <p>{{ club.description|linebreaksbr }}</p>
+    {% if club.email %}
+      <p><i class="bi bi-envelope"></i> <a href="mailto:{{ club.email }}">{{ club.email }}</a></p>
+    {% endif %}
+  </div>
+
+  <div class="col-lg-4">
+    <div class="card shadow-sm mb-3">
+      <div class="card-body">
+        <h2 class="h6 text-uppercase text-muted">Membership</h2>
+        {% if not user.is_authenticated %}
+          <p class="mb-2">Log in to join this club.</p>
+          <a class="btn btn-primary w-100" href="{% url 'accounts:login' %}?next={{ request.path }}">Log in</a>
+        {% elif membership.status == "approved" %}
+          <p class="mb-2">You are a <strong>{{ membership.get_role_display|lower }}</strong> of this club.</p>
+          {% if is_executive %}
+            <p class="small text-muted mb-0">You are an executive of this club.</p>
+          {% else %}
+            <form method="post" action="{% url 'clubs:leave' club.slug %}">
+              {% csrf_token %}
+              <button class="btn btn-outline-danger w-100" onclick="return confirm('Leave this club?')">Leave club</button>
+            </form>
+          {% endif %}
+        {% elif membership.status == "pending" %}
+          <p class="mb-0 text-warning"><i class="bi bi-hourglass-split"></i> Your join request is waiting for approval.</p>
+        {% else %}
+          {% if membership.status == "rejected" %}
+            <p class="small text-muted">Your last request was not approved. You can ask again.</p>
+          {% endif %}
+          <form method="post" action="{% url 'clubs:join' club.slug %}">
+            {% csrf_token %}
+            <button class="btn btn-primary w-100">Request to join</button>
+          </form>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h2 class="h6 text-uppercase text-muted">Members ({{ members|length }})</h2>
+        <ul class="list-unstyled mb-0">
+          {% for m in members %}
+            <li class="py-1">
+              {{ m.user }}
+              {% if m.role == "executive" %}<span class="badge bg-warning text-dark">Executive</span>{% endif %}
+            </li>
+          {% empty %}
+            <li class="text-muted">No members yet.</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

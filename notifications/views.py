@@ -8,7 +8,7 @@ from .models import Notification
 
 @login_required
 def notification_list(request):
-    notifications = request.user.notifications.all()[:50]
+    notifications = request.user.notifications.all()[:30]  # latest 30 is enough
     return render(request, "notifications/notification_list.html", {"notifications": notifications})
 
 

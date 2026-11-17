@@ -136,7 +136,13 @@ def approval_queue(request):
     pending = Event.objects.filter(status=Event.Status.PENDING).select_related(
         "club", "created_by"
     ).order_by("updated_at")
-    return render(request, "events/approval_queue.html", {"pending": pending})
+    recently_reviewed = Event.objects.filter(reviewed_at__isnull=False).select_related(
+        "club", "reviewed_by"
+    ).order_by("-reviewed_at")[:10]
+    return render(request, "events/approval_queue.html", {
+        "pending": pending,
+        "recently_reviewed": recently_reviewed,
+    })
 
 
 @dosa_required

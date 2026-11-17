@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render
+from django.utils import timezone
 from django.views.decorators.http import require_POST
 
 from events.models import Event
@@ -53,10 +54,14 @@ def cancel_registration(request, event_id):
 
 @login_required
 def my_registrations(request):
+    now = timezone.now()
     registrations = request.user.registrations.filter(
         status=Registration.Status.REGISTERED
-    ).select_related("event", "event__club").order_by("event__start_time")
-    return render(request, "registrations/my_registrations.html", {"registrations": registrations})
+    ).select_related("event", "event__club")
+    return render(request, "registrations/my_registrations.html", {
+        "upcoming": registrations.filter(event__end_time__gte=now).order_by("event__start_time"),
+        "past": registrations.filter(event__end_time__lt=now).order_by("-event__start_time"),
+    })
 
 
 def _event_for_manager(request, event_id):

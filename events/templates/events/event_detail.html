@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% load event_tags %}
+
+{% block title %}{{ event.title }}{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+  <div class="col-lg-8">
+    <a href="{{ event.club.get_absolute_url }}" class="small">{{ event.club.name }}</a>
+    <h1 class="h2 mt-1">{{ event.title }}</h1>
+    {% if event.status != "approved" %}
+      <span class="badge bg-{{ event.status|status_color }} status-badge">{{ event.get_status_display }}</span>
+    {% endif %}
+    <p class="mt-3">{{ event.description|linebreaksbr }}</p>
+  </div>
+
+  <div class="col-lg-4">
+    <div class="card shadow-sm mb-3">
+      <div class="card-body">
+        <p class="mb-2"><i class="bi bi-calendar-event"></i> {{ event.start_time|date:"l, F j, Y" }}</p>
+        <p class="mb-2"><i class="bi bi-clock"></i> {{ event.start_time|time:"g:i A" }} to {{ event.end_time|time:"g:i A" }}</p>
+        <p class="mb-2"><i class="bi bi-geo-alt"></i> {{ event.venue }}</p>
+        <p class="mb-0"><i class="bi bi-people"></i> {{ event.capacity }} seats</p>
+      </div>
+    </div>
+
+    {% if is_executive %}
+      <div class="card shadow-sm mb-3">
+        <div class="card-body">
+          <h2 class="h6 text-uppercase text-muted">Club executive</h2>
+          {% if event.can_be_edited %}
+            <a class="btn btn-outline-primary w-100 mb-2" href="{% url 'events:edit' event.pk %}">Edit event</a>
+            <form method="post" action="{% url 'events:submit' event.pk %}">
+              {% csrf_token %}
+              <button class="btn btn-primary w-100">Submit to DOSA for approval</button>
+            </form>
+          {% elif event.status == "pending" %}
+            <p class="mb-0 small">Waiting for DOSA to review this event.</p>
+          {% endif %}
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

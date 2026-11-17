@@ -18,13 +18,19 @@
   color: var(--clubhub-accent);
 }
 
+/* Cards that link somewhere lift a little on hover */
+.card:has(.stretched-link):hover {
+  transform: translateY(-2px);
+  transition: transform 0.15s ease;
+}
+
 .status-badge {
   text-transform: capitalize;
 }
 
 .navbar .badge {
-  font-size: 0.65rem;
+  font-size: 0.6rem;
   position: absolute;
-  top: 2px;
-  right: -4px;
+  top: 0;
+  right: -6px;
 }

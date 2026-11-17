@@ -38,3 +38,11 @@ class SignUpForm(BootstrapFormMixin, UserCreationForm):
         if User.objects.filter(student_id=student_id).exists():
             raise forms.ValidationError("An account with this student ID already exists.")
         return student_id
+
+
+class ProfileForm(BootstrapFormMixin, forms.ModelForm):
+    """What a user can change about themselves (student ID and role stay fixed)."""
+
+    class Meta:
+        model = User
+        fields = ("first_name", "last_name", "email", "department", "phone")

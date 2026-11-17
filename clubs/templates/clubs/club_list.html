@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+
+{% block title %}Clubs{% endblock %}
+
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+  <h1 class="h3 mb-0">Clubs at IUB</h1>
+  <form class="d-flex gap-2" method="get">
+    <input class="form-control" type="search" name="q" value="{{ query }}" placeholder="Search clubs">
+    <select class="form-select" name="category">
+      <option value="">All categories</option>
+      {% for value, label in categories %}
+        <option value="{{ value }}" {% if value == category %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+    <button class="btn btn-outline-primary" type="submit">Filter</button>
+  </form>
+</div>
+
+
+<div class="row g-3">
+  {% for club in clubs %}
+    <div class="col-md-6 col-lg-4">
+      <div class="card h-100 shadow-sm">
+        <div class="card-body">
+          <span class="badge bg-secondary mb-2">{{ club.get_category_display }}</span>
+          <h5 class="card-title mb-1">{{ club.name }}</h5>
+          {% if club.founded_year %}
+            <p class="small text-muted mb-2">Founded in {{ club.founded_year }}</p>
+          {% endif %}
+          <p class="card-text text-muted">{{ club.description|truncatewords:20 }}</p>
+          {% if club.email %}
+            <a href="mailto:{{ club.email }}" class="small"><i class="bi bi-envelope"></i> {{ club.email }}</a>
+          {% endif %}
+        </div>
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+          <small class="text-muted"><i class="bi bi-people"></i> {{ club.member_count }} member{{ club.member_count|pluralize }}</small>
+          <a href="{{ club.get_absolute_url }}" class="btn btn-sm btn-primary">View club</a>
+        </div>
+      </div>
+    </div>
+  {% empty %}
+    <p class="text-muted">No clubs match your search.</p>
+  {% endfor %}
+</div>
+{% endblock %}

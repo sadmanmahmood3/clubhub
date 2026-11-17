@@ -10,13 +10,26 @@ from .models import Club, Membership
 
 
 def club_list(request):
-    """All active clubs."""
+    """All active clubs, with search by name and a category filter."""
+    query = request.GET.get("q", "").strip()
+    category = request.GET.get("category", "")
+
     clubs = Club.objects.filter(is_active=True).annotate(
         member_count=Count(
             "memberships", filter=Q(memberships__status=Membership.Status.APPROVED)
         )
     )
-    return render(request, "clubs/club_list.html", {"clubs": clubs})
+    if query:
+        clubs = clubs.filter(Q(name__icontains=query) | Q(description__icontains=query))
+    if category:
+        clubs = clubs.filter(category=category)
+
+    return render(request, "clubs/club_list.html", {
+        "clubs": clubs,
+        "query": query,
+        "category": category,
+        "categories": Club.Category.choices,
+    })
 
 
 def club_detail(request, slug):

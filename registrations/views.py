@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
+from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
 
@@ -18,16 +19,19 @@ def register(request, event_id):
         messages.error(request, "Registration is closed for this event.")
         return redirect("events:detail", pk=event.pk)
 
-    already = Registration.objects.filter(
-        user=request.user, event=event, status=Registration.Status.REGISTERED
-    ).exists()
-    if already:
-        messages.info(request, "You are already registered for this event.")
-    elif seats_left(event) == 0:
-        messages.error(request, "Sorry, this event is full.")
-    else:
-        Registration.objects.create(user=request.user, event=event)
-        messages.success(request, f"You are registered for {event.title}!")
+    with transaction.atomic():
+        registration = Registration.objects.filter(user=request.user, event=event).first()
+        if registration and registration.status == Registration.Status.REGISTERED:
+            messages.info(request, "You are already registered for this event.")
+        elif seats_left(event) == 0:
+            messages.error(request, "Sorry, this event is full.")
+        else:
+            if registration:  # registered before, cancelled, and now registering again
+                registration.status = Registration.Status.REGISTERED
+                registration.save(update_fields=["status"])
+            else:
+                Registration.objects.create(user=request.user, event=event)
+            messages.success(request, f"You are registered for {event.title}!")
 
     return redirect("events:detail", pk=event.pk)
 

@@ -22,6 +22,7 @@
         <li class="nav-item"><a class="nav-link" href="{% url 'clubs:list' %}">Clubs</a></li>
         <li class="nav-item"><a class="nav-link" href="{% url 'events:list' %}">Events</a></li>
         {% if user.is_authenticated and user.is_dosa %}
+        <li class="nav-item"><a class="nav-link" href="{% url 'events:approval_queue' %}">Approvals</a></li>
         <li class="nav-item"><a class="nav-link" href="{% url 'registrations:report' %}">Reports</a></li>
         {% endif %}
       </ul>

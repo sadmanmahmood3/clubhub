@@ -33,7 +33,27 @@
 
 {% if not user.is_dosa %}
 <div class="row g-4">
-  <div class="col-lg-8">
+  <div class="col-lg-6">
+    <div class="card shadow-sm h-100">
+      <div class="card-body">
+        <h2 class="h5">My upcoming events</h2>
+        <ul class="list-group list-group-flush">
+          {% for r in upcoming_registrations %}
+            <li class="list-group-item px-0">
+              <a href="{% url 'events:detail' r.event.pk %}">{{ r.event.title }}</a>
+              <div class="small text-muted">{{ r.event.club.name }} &middot; {{ r.event.start_time|date:"M j, g:i A" }}</div>
+            </li>
+          {% empty %}
+            <li class="list-group-item px-0 text-muted">
+              You haven't registered for any upcoming events. <a href="{% url 'events:list' %}">Browse events</a>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-6">
     <div class="card shadow-sm h-100">
       <div class="card-body">
         <h2 class="h5">My clubs</h2>

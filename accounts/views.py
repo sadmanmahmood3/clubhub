@@ -7,6 +7,7 @@ from django.utils import timezone
 
 from clubs.models import Club, Membership
 from events.models import Event
+from registrations.models import Registration
 
 from .forms import ProfileForm, SignUpForm
 from .models import User
@@ -61,6 +62,9 @@ def dashboard(request):
             memberships__role=Membership.Role.EXECUTIVE,
             memberships__status=Membership.Status.APPROVED,
         ),
+        "upcoming_registrations": user.registrations.filter(
+            status=Registration.Status.REGISTERED, event__end_time__gte=now
+        ).select_related("event", "event__club").order_by("event__start_time")[:5],
     }
     if user.is_dosa:
         context.update({

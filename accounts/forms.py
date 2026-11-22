@@ -24,7 +24,7 @@ class SignUpForm(BootstrapFormMixin, UserCreationForm):
     first_name = forms.CharField(max_length=150)
     last_name = forms.CharField(max_length=150)
     email = forms.EmailField()
-    student_id = forms.CharField(max_length=10, help_text="Your 7-digit IUB student ID.")
+    student_id = forms.CharField(max_length=10, help_text="Your 7-digit student ID.")
     department = forms.CharField(max_length=100, required=False)
 
     class Meta(UserCreationForm.Meta):
@@ -34,7 +34,7 @@ class SignUpForm(BootstrapFormMixin, UserCreationForm):
     def clean_student_id(self):
         student_id = self.cleaned_data["student_id"].strip()
         if not student_id.isdigit() or len(student_id) != 7:
-            raise forms.ValidationError("Student ID must be exactly 7 digits.")
+            raise forms.ValidationError("Student ID must be 7 digits.")
         if User.objects.filter(student_id=student_id).exists():
             raise forms.ValidationError("An account with this student ID already exists.")
         return student_id

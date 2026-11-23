@@ -23,7 +23,7 @@ def club_list(request):
         )
     )
     if query:
-        clubs = clubs.filter(Q(name__icontains=query))
+        clubs = clubs.filter(Q(name__icontains=query) | Q(description__icontains=query))
     if category:
         clubs = clubs.filter(category=category)
 
@@ -40,7 +40,7 @@ def club_detail(request, slug):
     membership = None
     if request.user.is_authenticated:
         membership = club.memberships.filter(user=request.user).first()
-    members = club.approved_members().select_related("user").order_by("-role", "user__first_name")
+    members = club.approved_members().select_related("user").order_by("role", "user__first_name")
 
     return render(request, "clubs/club_detail.html", {
         "club": club,
